@@ -92,7 +92,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="index"
           options={{
-            title: "حياك في تطبيق مبروك",
+            // title: "حياك في تطبيق مبروك",
             headerRight: () => <ThemeToggle />,
           }}
         />

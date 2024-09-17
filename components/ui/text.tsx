@@ -17,6 +17,7 @@ const Text = React.forwardRef<TextRef, SlottableTextProps>(
           textClass,
           className,
         )}
+        style={{ fontFamily: "BalooBhaijaan2-Regular" }}
         ref={ref}
         {...props}
       />
