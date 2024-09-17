@@ -76,11 +76,23 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
       <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#FFC107",
+          },
+          headerTintColor: "#000",
+          headerTitleStyle: {
+            fontWeight: "bold",
+            fontFamily: "BalooBhaijaan2-Bold",
+          },
+        }}
+        initialRouteName="index"
+      >
         <Stack.Screen
           name="index"
           options={{
-            title: "Starter Base",
+            title: "حياك في تطبيق مبروك",
             headerRight: () => <ThemeToggle />,
           }}
         />
