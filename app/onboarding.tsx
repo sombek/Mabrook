@@ -1,28 +1,23 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import {
   Animated,
+  Button as RNButton,
   ButtonProps,
   Dimensions,
   Image,
   Platform,
-  Button as RNButton,
+  ScrollView,
   View,
 } from 'react-native';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
-
-import ScrollView = Animated.ScrollView;
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { Button } from '~/components/nativewindui/Button';
 import { Text } from '~/components/nativewindui/Text';
-import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
-
-function DefaultButton({ color, ...props }: ButtonProps) {
-  const { colors } = useColorScheme();
-  return <RNButton color={color ?? colors.primary} {...props} />;
-}
+import { useEffect } from 'react';
+import { supabase } from '~/lib/supabase';
 
 export default function Screen() {
   const _renderItem = ({ item }: { item: { title: string; description: string } }) => {
@@ -60,6 +55,16 @@ export default function Screen() {
   const itemWidth = getScreenWidth() - 60;
   const [activeIndex, setActiveIndex] = React.useState(2);
   const { colors, colorScheme } = useColorScheme();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      router.push('/(workspace)');
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      router.push('/(workspace)');
+    });
+  }, []);
 
   return (
     <View className="">
@@ -104,7 +109,7 @@ export default function Screen() {
         />
         {/*  button bottom position */}
         <View className="flex flex-col items-center justify-center">
-          <Link href="/modal" asChild>
+          <Link href="/login" asChild>
             <Button size={Platform.select({ ios: 'lg', default: 'md' })} className="w-full">
               <Text>إبدأ الآن</Text>
             </Button>
