@@ -14,6 +14,7 @@ import { cn } from '~/lib/cn';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { NAV_THEME } from '~/theme';
 import colors from 'tailwindcss/colors';
+import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -38,9 +39,9 @@ export default function RootLayout() {
           <ActionSheetProvider>
             <NavThemeProvider value={NAV_THEME[colorScheme]}>
               <Stack screenOptions={SCREEN_OPTIONS}>
-                <Stack.Screen name="onboarding" options={INDEX_OPTIONS} />
+                <Stack.Screen name="index" options={INDEX_OPTIONS} />
                 <Stack.Screen name="login" options={LOGIN_OPTIONS} />
-                <Stack.Screen name="(workspace)" options={{ headerShown: false }} />
+                <Stack.Screen name="tabs" options={{ headerShown: false }} />
               </Stack>
             </NavThemeProvider>
           </ActionSheetProvider>
@@ -52,7 +53,7 @@ export default function RootLayout() {
   );
 }
 
-const SCREEN_OPTIONS = {
+const SCREEN_OPTIONS: NativeStackNavigationOptions = {
   animation: 'ios', // for android
 } as const;
 
@@ -63,8 +64,8 @@ const INDEX_OPTIONS = {
   // headerRight: () => <SettingsIcon />,
 } as const;
 
-const LOGIN_OPTIONS = {
+const LOGIN_OPTIONS: NativeStackNavigationOptions = {
   title: 'تسجيل الدخول',
   animation: 'fade_from_bottom', // for android
-  // presentation: 'modal',
+  presentation: 'modal',
 } as const;

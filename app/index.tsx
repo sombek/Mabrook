@@ -18,15 +18,32 @@ import { Text } from '~/components/nativewindui/Text';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { useEffect } from 'react';
 import { supabase } from '~/lib/supabase';
+import { cn } from '~/lib/cn';
 
 export default function Screen() {
-  const _renderItem = ({ item }: { item: { title: string; description: string } }) => {
+  const _renderItem = ({
+    item,
+    colorScheme,
+  }: {
+    item: { title: string; description: string };
+    colorScheme: string;
+  }) => {
     return (
       <View className="flex flex-col items-center justify-center">
-        <Text variant="title3" className="p-4 text-right text-2xl font-semibold text-gray-800">
+        <Text
+          variant="title3"
+          className={cn(
+            'p-4 text-center text-2xl',
+            colorScheme === 'dark' ? 'text-white' : 'text-gray-800'
+          )}>
           {item.title}
         </Text>
-        <Text variant="body" className="p-4 pt-0 text-right text-lg text-gray-600">
+        <Text
+          variant="body"
+          className={cn(
+            'p-4 text-center text-base',
+            colorScheme === 'dark' ? 'text-white' : 'text-gray-800'
+          )}>
           {item.description}
         </Text>
       </View>
@@ -58,16 +75,23 @@ export default function Screen() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      router.push('/(workspace)');
+      console.log('from useEffect i am moving to workspace', session);
+      if (session) {
+        console.log('from getSession i am moving to workspace');
+        router.push('/tabs/workspace');
+      }
     });
 
     supabase.auth.onAuthStateChange((_event, session) => {
-      router.push('/(workspace)');
+      if (session) {
+        console.log('from onAuthStateChange i am moving to workspace');
+        router.push('/tabs/workspace');
+      }
     });
   }, []);
 
   return (
-    <View className="">
+    <View className={cn(colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white')}>
       <StatusBar
         style={Platform.OS === 'ios' ? 'light' : colorScheme === 'dark' ? 'light' : 'dark'}
       />
@@ -85,7 +109,7 @@ export default function Screen() {
         <Carousel
           ref={isCarousel}
           data={entries}
-          renderItem={_renderItem}
+          renderItem={({ item }) => _renderItem({ item, colorScheme })}
           sliderWidth={sliderWidth}
           itemWidth={itemWidth}
           vertical={false}
@@ -108,7 +132,7 @@ export default function Screen() {
           }}
         />
         {/*  button bottom position */}
-        <View className="flex flex-col items-center justify-center">
+        <View className={cn('flex flex-col items-center justify-center')}>
           <Link href="/login" asChild>
             <Button size={Platform.select({ ios: 'lg', default: 'md' })} className="w-full">
               <Text>إبدأ الآن</Text>

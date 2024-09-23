@@ -4,8 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import { AppState } from 'react-native';
 
 export const supabase = createClient(
-  process.env.EXPO_PUBLIC_SUPABASE_URL || '',
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
+  'https://ohgdivtvldokcfagsywc.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9oZ2RpdnR2bGRva2NmYWdzeXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjY2MDI4OTIsImV4cCI6MjA0MjE3ODg5Mn0.nazr-TiKx95RCTxOZMpelc0bgAyZDyGFbZwMlI_inS8',
   {
     auth: {
       storage: AsyncStorage,

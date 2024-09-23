@@ -1,0 +1,28 @@
+I want to build a mobile app Called Mabrook which is a wedding planning app that helps couples to plan their wedding in a smart way.
+
+The app will have the following features:
+قاعات الزفاف
+التصوير الفوتوغرافي والفيديو
+دعوة زواج
+كوش وتنسيق حفلات
+فستان الزفاف
+الشعر والمكياج
+كيك الزفاف
+نقش حناء
+بوفيه مفتوح وضيافة
+زفات و دي جي
+خواتم ومجوهرات الزف
+مراكز تجميل وعناية بالبشرة
+توزيعات الافراح والمناسبات
+زهور الزفاف
+
+with 3 Tabs which are:
+- Workspace: to access each service separately.
+    - The workspace should be divided into categories. - category is a service. - in fancy cards.
+    - Each card should be clickable to enter the service.
+- Checklist:
+    - The user can add the tasks that he wants to do.
+    - The user can mark the task as done.
+    - The user can add a task to the calendar.
+    - The user can add a task to the share tab.
+- Settings: TBD

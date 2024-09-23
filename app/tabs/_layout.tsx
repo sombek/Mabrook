@@ -16,9 +16,10 @@ export default function RootLayout() {
           <NavThemeProvider value={NAV_THEME[colorScheme]}>
             <Tabs>
               <Tabs.Screen
-                name="index"
+                name="workspace"
                 options={{
                   title: 'الرئيسية',
+                  headerShown: false,
                 }}
               />
               <Tabs.Screen

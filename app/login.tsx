@@ -8,6 +8,7 @@ import { Button } from '~/components/nativewindui/Button';
 import { useEffect, useState } from 'react';
 import { supabase } from '~/lib/supabase';
 import { router } from 'expo-router';
+import { cn } from '~/lib/cn';
 
 export const LoginPage = ({
   setIsLoggingIn,
@@ -24,8 +25,7 @@ export const LoginPage = ({
       phone: '+966' + phone,
     });
     if (error) {
-      console.log(error);
-      alert('Error logging in:', error.message);
+      alert(error.message);
     } else setIsLoggingIn(false);
   };
   return (
@@ -83,13 +83,22 @@ export const VerifyOtp = ({
         token: otp,
         type: 'sms',
       });
-      if (error) alert('Error verifying OTP:', error.message);
-
-      if (session) {
-        router.push('../');
-      }
+      if (error) alert(error.message);
+      return session;
     };
-    verifyOtp().then((r) => console.log(r));
+    verifyOtp()
+      .then((r) => {
+        if (r) {
+          console.log('from verifyOtp i am moving to workspace');
+          router.dismissAll();
+          setTimeout(() => {
+            router.push('/tabs/workspace');
+          }, 0);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }
 
   return (
@@ -132,7 +141,9 @@ export default function ModalScreen() {
   const [phone, setPhone] = useState('');
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.push('/(workspace)');
+      if (session) {
+        router.push('/tabs/workspace');
+      }
     });
   }, []);
 

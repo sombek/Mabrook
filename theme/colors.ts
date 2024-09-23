@@ -18,18 +18,18 @@ const IOS_SYSTEM_COLORS = {
     primary: 'rgb(0, 123, 254)',
   },
   dark: {
-    grey6: 'rgb(21, 21, 24)',
-    grey5: 'rgb(40, 40, 42)',
-    grey4: 'rgb(55, 55, 57)',
-    grey3: 'rgb(70, 70, 73)',
-    grey2: 'rgb(99, 99, 102)',
-    grey: 'rgb(142, 142, 147)',
-    background: 'rgb(0, 0, 0)',
-    foreground: 'rgb(255, 255, 255)',
-    root: 'rgb(0, 0, 0)',
-    card: 'rgb(28, 28, 30)',
-    destructive: 'rgb(254, 67, 54)',
-    primary: 'rgb(3, 133, 255)',
+    grey6: 'rgb(17, 24, 39)', // Darkest grey, close to background
+    grey5: 'rgb(31, 41, 55)', // Main background color
+    grey4: 'rgb(45, 55, 72)', // Secondary background
+    grey3: 'rgb(59, 70, 85)', // Tertiary background
+    grey2: 'rgb(75, 85, 99)', // Quaternary background
+    grey: 'rgb(107, 114, 128)', // Placeholder text color
+    background: 'rgb(31, 41, 55)', // Main background
+    foreground: 'rgb(255, 255, 255)', // Primary text color
+    root: 'rgb(17, 24, 39)', // Root background
+    card: 'rgb(45, 55, 72)', // Card or surface color
+    destructive: 'rgb(220, 38, 38)', // Destructive actions color
+    primary: 'rgb(59, 130, 246)', // Primary action color
   },
 } as const;
 

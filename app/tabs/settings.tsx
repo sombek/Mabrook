@@ -10,7 +10,7 @@ const Settings = () => {
   const handleLogout = () => {
     supabase.auth.signOut().then(() => {
       console.log('user logged out');
-      router.navigate('/onboarding');
+      router.navigate('/');
     });
   };
   return (
