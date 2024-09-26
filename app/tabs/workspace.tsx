@@ -7,6 +7,16 @@ import { router } from 'expo-router';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { cn } from '~/lib/cn';
 import { StatusBar } from 'expo-status-bar';
+import DeviceInfo from 'react-native-device-info';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardImage,
+  CardSubtitle,
+  CardTitle,
+} from '~/components/nativewindui/Card';
 
 const sections = [
   {
@@ -58,24 +68,53 @@ const sections = [
 ];
 
 const Header = () => {
-  // rounded bg-amber-500 bottom
+  const hasDynamicIsland = DeviceInfo.hasDynamicIsland();
+
   return (
-    <View className="h-96 bg-gradient-to-r from-amber-500 to-amber-300">
-      <View className="flex-row items-center justify-between p-4">
-        <View>
-          <Text className="text-2xl font-bold text-white">مرحباً بك في زفاف</Text>
-          <Text className="text-sm text-white">المكان الأمثل لتحضير حفل زفاف أحلامك</Text>
-        </View>
-        <View>
-          <Button variant="tonal" className="bg-white">
-            <Icon name="lock-open-outline" size={21} color="black" />
-            <Text className="ml-2">تسجيل الخروج</Text>
-          </Button>
-        </View>
-      </View>
+    <View
+      className={cn(
+        'w-full items-center justify-end rounded-b-3xl bg-amber-400 p-4',
+        hasDynamicIsland ? 'pt-16' : 'pt-4'
+      )}>
+      <Text className="text-center text-2xl font-bold text-white">زواج حليمة و سعيد 🎉</Text>
+      <Text className="text-center text-2xl font-bold text-white">
+        <Icon name={'calendar-alert'} size={24} color={'white'} />{' '}
+        {new Date()
+          .toLocaleDateString('ar-EG', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+          .replace('،', '')}
+      </Text>
     </View>
   );
 };
+
+const featuredSections = [
+  {
+    label: 'قاعة زفاف الملكة',
+    type: 'wedding-venue',
+    description: 'احصل على أفضل العروض والخصومات من المتاجر المحلية في مدينتك.',
+    'bg-image':
+      'https://www.arabiaweddings.com/sites/default/files/styles/max980/public/articles/2018/09/largest_wedding_venues_in_riyadh.jpg?itok=dCQEt9HH',
+  },
+  {
+    label: 'قاعة زفاف الملكة',
+    type: 'wedding-venue',
+    description: 'احصل على أفضل العروض والخصومات من المتاجر المحلية في مدينتك.',
+    'bg-image':
+      'https://www.arabiaweddings.com/sites/default/files/styles/max980/public/articles/2018/09/largest_wedding_venues_in_riyadh.jpg?itok=dCQEt9HH',
+  },
+  {
+    label: 'قاعة زفاف الملكة',
+    type: 'wedding-venue',
+    description: 'احصل على أفضل العروض والخصومات من المتاجر المحلية في مدينتك.',
+    'bg-image':
+      'https://www.arabiaweddings.com/sites/default/files/styles/max980/public/articles/2018/09/largest_wedding_venues_in_riyadh.jpg?itok=dCQEt9HH',
+  },
+];
 const Workspace = () => {
   const { colors, colorScheme } = useColorScheme();
   const handleLogout = () => {
@@ -90,22 +129,31 @@ const Workspace = () => {
         style={Platform.OS === 'ios' ? 'light' : colorScheme === 'dark' ? 'light' : 'dark'}
       />
       <Header />
-      <SafeAreaView>
-        <ScrollView className="p-4 ">
-          {sections.map((section, index) => (
-            <TouchableOpacity key={index}>
-              <ImageBackground
-                source={{ uri: section['bg-image'] }}
-                className={cn('mb-4  min-h-32  overflow-hidden rounded-xl')}>
-                <View style={{ backgroundColor: section['overlay-color'] }} className="flex-1 p-4">
-                  <Text className="text-right text-xl font-bold text-white">{section.label}</Text>
-                  <Text className="mt-1 text-right text-white">{section.description}</Text>
-                </View>
-              </ImageBackground>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </SafeAreaView>
+      <ScrollView className="p-4">
+        {sections.map((section, index) => (
+          <TouchableOpacity key={index}>
+            <View className="mb-4">
+              <Card>
+                <CardImage
+                  source={{
+                    uri: section['bg-image'],
+                  }}
+                />
+                <CardContent>
+                  <CardTitle>
+                    <Text className={'text-right text-white'}>{section.label}</Text>
+                  </CardTitle>
+                </CardContent>
+                <CardFooter>
+                  <CardDescription className={'text-right text-white'}>
+                    {section.label} - {section.description}
+                  </CardDescription>
+                </CardFooter>
+              </Card>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </>
   );
 };

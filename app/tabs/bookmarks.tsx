@@ -9,7 +9,7 @@ import { Session } from '@supabase/auth-js';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import * as React from 'react';
 
-const Settings = () => {
+const Bookmarks = () => {
   const { colors } = useColorScheme();
   const [session, setSession] = useState<Session | null>(null);
   useEffect(() => {
@@ -42,4 +42,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default Bookmarks;
