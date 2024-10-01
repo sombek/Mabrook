@@ -89,10 +89,10 @@ export const VerifyOtp = ({
     verifyOtp()
       .then((r) => {
         if (r) {
-          console.log('from verifyOtp i am moving to workspace');
+          console.log('from verifyOtp i am moving to survey');
           router.dismissAll();
           setTimeout(() => {
-            router.push('/tabs/workspace');
+            router.push('/survey');
           }, 0);
         }
       })

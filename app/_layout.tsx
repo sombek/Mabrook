@@ -41,6 +41,7 @@ export default function RootLayout() {
               <Stack screenOptions={SCREEN_OPTIONS}>
                 <Stack.Screen name="index" options={INDEX_OPTIONS} />
                 <Stack.Screen name="login" options={LOGIN_OPTIONS} />
+                <Stack.Screen name="survey" options={SURVEY_OPTIONS} />
                 <Stack.Screen name="tabs" options={{ headerShown: false }} />
               </Stack>
             </NavThemeProvider>
@@ -56,7 +57,9 @@ export default function RootLayout() {
 const SCREEN_OPTIONS: NativeStackNavigationOptions = {
   animation: 'ios', // for android
 } as const;
-
+let SURVEY_OPTIONS: NativeStackNavigationOptions = {
+  headerShown: false,
+};
 const INDEX_OPTIONS = {
   headerShown: false,
   // headerLargeTitle: true,
