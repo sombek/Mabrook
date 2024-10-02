@@ -395,6 +395,7 @@ function ListSectionHeaderComponent<T extends ListDataItem>(
       className={cn(
         'ios:pb-1 pb-4 pl-4 pt-4',
         Platform.OS !== 'ios' && 'border-border/25 dark:border-border/80 border-b',
+        variant === 'full-width' ? 'bg-card dark:bg-background' : 'bg-background',
         className
       )}
       {...props}

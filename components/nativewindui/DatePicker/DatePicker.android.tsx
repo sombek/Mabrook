@@ -41,7 +41,7 @@ export function DatePicker(
             </Text>
           </Pressable>
           <View
-            className={cn('absolute left-2 top-0 bg-card px-1', props.materialDateLabelClassName)}>
+            className={cn('bg-card absolute left-2 top-0 px-1', props.materialDateLabelClassName)}>
             <Text variant="caption2" className="text-[10px] opacity-60">
               {props.materialDateLabel ?? 'Date'}
             </Text>
@@ -60,7 +60,7 @@ export function DatePicker(
             </Text>
           </Pressable>
           <View
-            className={cn('absolute left-2 top-0 bg-card px-1', props.materialTimeLabelClassName)}>
+            className={cn('bg-card absolute left-2 top-0 px-1', props.materialTimeLabelClassName)}>
             <Text variant="caption2" className="text-[10px] opacity-60">
               {props.materialTimeLabel ?? 'Time'}
             </Text>
