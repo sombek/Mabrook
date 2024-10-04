@@ -1,21 +1,64 @@
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { supabase } from '~/lib/supabase';
 import { Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { Text } from '~/components/nativewindui/Text';
 import { StatusBar } from 'expo-status-bar';
-import * as React from 'react';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { ThemeToggle } from '~/components/ThemeToggle';
 import { Icon } from '@roninoss/icons';
-import { TextField } from '~/components/nativewindui/TextField';
 import { Toggle } from '~/components/nativewindui/Toggle';
 import { DatePicker } from '~/components/nativewindui/DatePicker';
 import { Button } from '~/components/nativewindui/Button';
 
-const RenderSurvey = ({ survey, setAnswers }: { survey: any; setAnswers: any }) => {
+const RenderSurvey = ({
+  survey,
+  setAnswers,
+  currentQuestion,
+}: {
+  survey: any;
+  setAnswers: any;
+  currentQuestion: number;
+}) => {
   const [selectedOption, setSelectedOption] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [booleanValue, setBooleanValue] = useState(false);
+
+  useEffect(() => {
+    // Update the answer whenever any value changes
+    switch (survey.questionType) {
+      case 'number':
+        setAnswers((prev: any) => {
+          const newAnswers = [...prev];
+          newAnswers[currentQuestion] = '';
+          return newAnswers;
+        });
+        break;
+      case 'multipleChoice':
+        setAnswers((prev: any) => {
+          const newAnswers = [...prev];
+          newAnswers[currentQuestion] = selectedOption;
+          return newAnswers;
+        });
+        break;
+      case 'date':
+        setAnswers((prev: any) => {
+          const newAnswers = [...prev];
+          newAnswers[currentQuestion] = selectedDate;
+          return newAnswers;
+        });
+        break;
+      case 'boolean':
+        setAnswers((prev: any) => {
+          const newAnswers = [...prev];
+          newAnswers[currentQuestion] = booleanValue;
+          return newAnswers;
+        });
+        break;
+      default:
+        throw new Error('Invalid question type');
+    }
+  }, [selectedOption, selectedDate, booleanValue]);
+
   switch (survey.questionType) {
     case 'number':
       return (
@@ -25,12 +68,17 @@ const RenderSurvey = ({ survey, setAnswers }: { survey: any; setAnswers: any }) 
             <TextInput
               keyboardType="phone-pad"
               className="h-14 w-full rounded-xl border-gray-300  bg-white px-2 text-gray-700"
-              onChangeText={(text) => setAnswers(text)}
+              onChangeText={(text) =>
+                setAnswers((prev: any) => {
+                  const newAnswers = [...prev];
+                  newAnswers[currentQuestion] = text;
+                  return newAnswers;
+                })
+              }
             />
           </View>
         </>
       );
-
     case 'multipleChoice':
       return (
         <View>
@@ -59,7 +107,9 @@ const RenderSurvey = ({ survey, setAnswers }: { survey: any; setAnswers: any }) 
             mode={'date'}
             minimumDate={new Date()}
             value={new Date()}
-            onChange={(event, selectedDate) => setSelectedDate(selectedDate)}
+            onChange={(event, selectedDate) => {
+              if (selectedDate) setSelectedDate(selectedDate);
+            }}
           />
         </>
       );
@@ -77,33 +127,51 @@ const RenderSurvey = ({ survey, setAnswers }: { survey: any; setAnswers: any }) 
 
 const SurveyQuestions = ({ survey }: { survey: any }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState<any>(Array(survey.questions.length).fill(''));
+
   const handleNext = () => {
     if (currentQuestion === survey.questions.length - 1) {
-      // submit answers
       return;
     }
-    // save answer to state
-    // go to next question
     setCurrentQuestion(currentQuestion + 1);
   };
+
   const handlePrevious = () => {
     if (currentQuestion === 0) {
       return;
     }
-    // go to previous question
     setCurrentQuestion(currentQuestion - 1);
   };
 
-  const handleSubmit = () => {
-    // save answer to state
-    // submit answers
-    console.log(answers);
+  const handleSubmit = async () => {
+    try {
+      console.log('Submitting answers:', answers);
+      const answersWithQuestions = [];
+      // print questions and answers to console
+      for (let i = 0; i < survey.questions.length; i++) {
+        answersWithQuestions.push({
+          question: survey.questions[i].questionText,
+          answer: answers[i],
+        });
+      }
+      console.log(answersWithQuestions);
+
+      // const { error } = await supabase.from('responses').insert([{ answers }]);
+      // if (error) throw error;
+      console.log('Answers submitted successfully');
+    } catch (error) {
+      console.error('Error submitting answers:', error);
+    }
   };
+
   return (
     <View className="min-h-96 flex-col items-center justify-center gap-4">
       <View className="min-h-96 flex-col items-center justify-center gap-4">
-        <RenderSurvey survey={survey.questions[currentQuestion]} setAnswers={setAnswers} />
+        <RenderSurvey
+          survey={survey.questions[currentQuestion]}
+          setAnswers={setAnswers}
+          currentQuestion={currentQuestion}
+        />
       </View>
       <View className="w-full flex-row items-center justify-between gap-4">
         {currentQuestion > 0 && (
@@ -116,16 +184,12 @@ const SurveyQuestions = ({ survey }: { survey: any }) => {
             <Text>التالي</Text>
           </Button>
         )}
-        {
-          // submit button
-          currentQuestion === survey.questions.length - 1 && (
-            <Button onPress={handleSubmit} className="">
-              <Text>إرسال</Text>
-            </Button>
-          )
-        }
+        {currentQuestion === survey.questions.length - 1 && (
+          <Button onPress={handleSubmit} className="">
+            <Text>إرسال</Text>
+          </Button>
+        )}
       </View>
-
       <Text className="mt-4 text-center text-base text-gray-800">
         {currentQuestion + 1} / {survey.questions.length}
       </Text>
@@ -140,7 +204,7 @@ const Survey = () => {
     // get first record from survey table in supabase
     const fetchSurvey = async () => {
       const { data, error } = await supabase.from('survey').select('*').limit(1);
-      setSurvey(data[0].survey);
+      if (data) setSurvey(data[0].survey);
     };
     fetchSurvey().then();
   }, []);
@@ -151,7 +215,7 @@ const Survey = () => {
         style={Platform.OS === 'ios' ? 'light' : colorScheme === 'dark' ? 'light' : 'dark'}
       />
       <View className="h-32 flex-row items-end justify-between bg-amber-500 p-4 shadow-md">
-        <Text className="text-center text-right text-2xl font-bold text-white">استبيان الزفاف</Text>
+        <Text className="text-center text-2xl font-bold text-white">استبيان الزفاف</Text>
       </View>
       <ScrollView>
         <View className="mt-4 flex-1 items-center justify-center gap-1 px-12">
