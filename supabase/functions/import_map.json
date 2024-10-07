@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "zod": "https://cdn.skypack.dev/zod",
+    "supabase": "https://cdn.skypack.dev/@supabase/supabase-js",
+    "axios": "https://cdn.skypack.dev/axios",
+    "openai": "https://deno.land/x/openai@v4.67.1/mod.ts"
+  }
+}
