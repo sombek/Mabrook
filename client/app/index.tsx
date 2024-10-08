@@ -75,17 +75,36 @@ export default function Screen() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('from useEffect i am moving to workspace', session);
       if (session) {
-        console.log('from getSession i am moving to workspace');
-        router.push('/survey');
+        // check if the user have tasks
+        supabase
+          .from('tasks')
+          .select('*')
+          // .eq('user_id', session.user.id)
+          .then(({ data }) => {
+            if (data !== null && data.length > 0) {
+              router.push('/tabs/workspace');
+            } else {
+              router.push('/survey');
+            }
+          });
       }
     });
 
     supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        console.log('from onAuthStateChange i am moving to workspace');
-        router.push('/survey');
+        // check if the user have tasks
+        supabase
+          .from('tasks')
+          .select()
+          // .eq('user_id', session.user.id)
+          .then(({ data }) => {
+            if (data !== null && data.length > 0) {
+              router.push('/tabs/workspace');
+            } else {
+              router.push('/survey');
+            }
+          });
       }
     });
   }, []);

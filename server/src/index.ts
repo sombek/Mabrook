@@ -1,90 +1,87 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+import { generateTasksFromSurvey } from './generateTasks';
+import { Bindings } from '../bindings';
+import { createSupabaseClient } from '../supabaseClient';
 
-type Bindings = {
-  OPENAI_API_KEY: string;
-};
+// Create the Hono app with bindings
+type AppEnv = { Bindings: Bindings };
+const app = new Hono<AppEnv>();
 
-const app = new Hono<{ Bindings: Bindings }>();
-import { createClient } from '@supabase/supabase-js';
-
-// Create a single supabase client for interacting with your database
-
-const route = app.post(
+// Define route to handle task generation
+app.post(
   '/tasks',
   zValidator(
     'json',
     z.array(
       z.object({
         question: z.string(),
-        // could be a string, number, or boolean
-        answer: z.string() || z.number() || z.boolean(),
+        answer: z.union([z.string(), z.number(), z.boolean()]),
       })
     )
   ),
   async (c) => {
+    // Validate authorization token
     const token = c.req.header('Authorization');
     if (!token) {
-      return c.json(
-        {
-          ok: false,
-          message: 'Unauthorized',
-        },
-        401
-      );
+      return c.json({ ok: false, message: 'Unauthorized' }, 401);
     }
-    const supabase = createClient(
-      'https://ohgdivtvldokcfagsywc.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9oZ2RpdnR2bGRva2NmYWdzeXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjY2MDI4OTIsImV4cCI6MjA0MjE3ODg5Mn0.nazr-TiKx95RCTxOZMpelc0bgAyZDyGFbZwMlI_inS8',
-      { global: { headers: { Authorization: c.req.header('Authorization')! } } }
-    );
-    const resp = await supabase.auth.getUser(token.replace('Bearer ', ''));
 
-    // Handle the survey input array
-    const surveyInputs = c.req.valid('json');
+    try {
+      // Create Supabase client
+      const supabase = createSupabaseClient(c.env, token);
 
-    // surveyInputs.forEach((input) => {
-    //   console.log('Received survey input:', input);
-    // });
+      // Handle the survey input array
+      const surveyInputs = c.req.valid('json');
+      const sections = await generateTasksFromSurvey(c.env, surveyInputs);
 
-    const r = await supabase.auth.getSession();
-    console.log(r);
-    const response = await supabase.from('sections').insert({
-      name: 'Survey',
-      description: JSON.stringify(surveyInputs),
-    });
-    console.log(response);
-    return c.json(
-      {
-        ok: true,
-        message: 'Survey data received!',
-      },
-      201
-    );
+      // Add sections and tasks to the database
+      for (const section of sections) {
+        // Add the section to the database if it doesn't exist
+        let { data: sectionData, error: sectionError } = await supabase
+          .from('sections')
+          .select()
+          .eq('name', section.section);
+
+        if (sectionError) {
+          throw new Error('Error fetching sections');
+        }
+
+        if (!sectionData || sectionData.length === 0) {
+          const { data, error: insertError } = await supabase
+            .from('sections')
+            .insert({ name: section.section })
+            .select();
+          if (insertError) {
+            throw new Error('Error inserting sections');
+          }
+          sectionData = data;
+        }
+
+        // Add tasks to the database
+        for (const task of section.tasks) {
+          const sectionId = sectionData[0].section_id;
+          const { error: taskError } = await supabase.from('tasks').insert({
+            section_id: sectionId,
+            name: task.title,
+            details: task.description,
+            status: 'pending',
+          });
+
+          if (taskError) {
+            throw new Error('Error inserting tasks');
+          }
+        }
+      }
+
+      return c.json({ ok: true, message: 'Survey data received!' }, 201);
+    } catch (error) {
+      console.error('Error processing request:', error);
+      return c.json({ ok: false, message: 'Internal Server Error' }, 500);
+    }
   }
 );
 
-export type AppType = typeof route;
+export type AppType = typeof app;
 export default app;
-
-// const honoClient = hc<AppType>('');
-// export type HonoClientType = typeof honoClient; // Needed to fix webstorm types issue
-
-//
-// app.get('/', async (c) => {
-//   let jwt = c.req.header('Authorization');
-//   if (!jwt) {
-//     return c.text('Unauthorized');
-//   }
-//   jwt = jwt.replace('Bearer ', '');
-//
-//   const {
-//     data: { user },
-//   } = await supabase.auth.getUser(jwt);
-//   console.log(user);
-//
-//   const SECRET_KEY = c.env.OPENAI_API_KEY;
-//   return c.text(SECRET_KEY);
-//   // return c.text('Hello Hono!');
-// });

@@ -11,6 +11,7 @@ import { DatePicker } from '~/components/nativewindui/DatePicker';
 import { Button } from '~/components/nativewindui/Button';
 import { AppType } from '../../server/src';
 import { hc } from 'hono/dist/client';
+import { router } from 'expo-router';
 
 const RenderSurvey = ({
   survey,
@@ -173,6 +174,7 @@ const SurveyQuestions = ({ survey }: { survey: any }) => {
       const data = await response.json();
       console.log(data);
       console.log(response);
+      router.push('/tabs/workspace');
 
       // const { error } = await supabase.from('responses').insert([{ answers }]);
       // if (error) throw error;
@@ -233,7 +235,7 @@ const Survey = () => {
         style={Platform.OS === 'ios' ? 'light' : colorScheme === 'dark' ? 'light' : 'dark'}
       />
       <View className="h-32 flex-row items-end justify-between bg-amber-500 p-4 shadow-md">
-        <Text className="text-center text-2xl font-bold text-white">استبيان الزفاف</Text>
+        <Text className="text-center text-2xl font-bold text-white">استبيان </Text>
       </View>
       <ScrollView>
         <View className="mt-4 flex-1 items-center justify-center gap-1 px-12">
