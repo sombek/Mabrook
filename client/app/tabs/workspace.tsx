@@ -17,6 +17,7 @@ import {
   CardSubtitle,
   CardTitle,
 } from '~/components/nativewindui/Card';
+import { useEffect, useState } from 'react';
 
 const sections = [
   {
@@ -123,6 +124,37 @@ const Workspace = () => {
       router.navigate('/');
     });
   };
+  const [sections33, setSections] = useState<
+    { description: string | null; name: string; section_id: number }[]
+  >([]);
+
+  useEffect(() => {
+    // get all tasks
+    const fetchTasks = async () => {
+      // join tasks and sections
+      const { data, error } = await supabase.from('tasks').select();
+      console.log(data);
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      // get sections
+      const { data: sectionsData, error: sectionsError } = await supabase
+        .from('sections')
+        .select()
+        .in(
+          'section_id',
+          data.map((task) => task.section_id)
+        );
+      if (sectionsError) {
+        console.error(sectionsError);
+        return;
+      }
+      if (sectionsData) setSections(sectionsData);
+    };
+    fetchTasks().then();
+  }, []);
   return (
     <>
       <StatusBar
@@ -130,23 +162,30 @@ const Workspace = () => {
       />
       <Header />
       <ScrollView className="p-4">
-        {sections.map((section, index) => (
-          <TouchableOpacity key={index}>
+        {sections33.map((section, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() =>
+              router.navigate({
+                pathname: '/section',
+                params: { section_id: section.section_id, section_name: section.name },
+              })
+            }>
             <View className="mb-4">
               <Card>
                 <CardImage
                   source={{
-                    uri: section['bg-image'],
+                    uri: sections[Math.floor(Math.random() * sections.length)]['bg-image'],
                   }}
                 />
                 <CardContent>
                   <CardTitle>
-                    <Text className={'text-right text-white'}>{section.label}</Text>
+                    <Text className={'text-right text-white'}>{section.name}</Text>
                   </CardTitle>
                 </CardContent>
                 <CardFooter>
                   <CardDescription className={'text-right text-white'}>
-                    {section.label} - {section.description}
+                    {section.name} - {section.description}
                   </CardDescription>
                 </CardFooter>
               </Card>

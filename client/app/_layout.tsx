@@ -43,6 +43,7 @@ export default function RootLayout() {
                 <Stack.Screen name="login" options={LOGIN_OPTIONS} />
                 <Stack.Screen name="survey" options={SURVEY_OPTIONS} />
                 <Stack.Screen name="tabs" options={{ headerShown: false }} />
+                <Stack.Screen name="section" options={{}} />
               </Stack>
             </NavThemeProvider>
           </ActionSheetProvider>

@@ -31,10 +31,10 @@ export async function generateTasksFromSurvey(
   const allResponseSchema = z.object({
     tasks: z.array(TasksSchema),
   });
-
+  console.log('Generating tasks for survey');
   const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
   const completion = await client.chat.completions.create({
-    model: 'gpt-4o-2024-08-06',
+    model: 'gpt-4o',
     messages: [
       { role: 'system', content: prompt.context },
       {

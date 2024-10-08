@@ -174,10 +174,12 @@ const SurveyQuestions = ({ survey }: { survey: any }) => {
       const data = await response.json();
       console.log(data);
       console.log(response);
+      if (response.status !== 201) {
+        console.error('Error submitting answers:', data);
+        return;
+      }
       router.push('/tabs/workspace');
 
-      // const { error } = await supabase.from('responses').insert([{ answers }]);
-      // if (error) throw error;
       console.log('Answers submitted successfully');
     } catch (error) {
       console.error('Error submitting answers:', error);
