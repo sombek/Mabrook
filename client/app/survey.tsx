@@ -9,6 +9,8 @@ import { Icon } from '@roninoss/icons';
 import { Toggle } from '~/components/nativewindui/Toggle';
 import { DatePicker } from '~/components/nativewindui/DatePicker';
 import { Button } from '~/components/nativewindui/Button';
+import { AppType } from '../../server/src';
+import { hc } from 'hono/dist/client';
 
 const RenderSurvey = ({
   survey,
@@ -151,10 +153,26 @@ const SurveyQuestions = ({ survey }: { survey: any }) => {
       for (let i = 0; i < survey.questions.length; i++) {
         answersWithQuestions.push({
           question: survey.questions[i].questionText,
-          answer: answers[i],
+          answer: '' + answers[i],
         });
       }
       console.log(answersWithQuestions);
+      const session = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+      console.log(session.data.session?.access_token);
+      const client = hc<AppType>('http://localhost:8787/', {
+        headers: {
+          Authorization: `Bearer ${session.data.session?.access_token}`,
+        },
+      });
+      const response = await client.tasks.$post({
+        json: answersWithQuestions,
+      });
+      const data = await response.json();
+      console.log(data);
+      console.log(response);
 
       // const { error } = await supabase.from('responses').insert([{ answers }]);
       // if (error) throw error;
