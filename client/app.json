@@ -10,6 +10,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "expo-localization",
       "expo-router",
       [
         "expo-dev-launcher",
@@ -45,6 +46,8 @@
       "package": "com.sombek.mabrook"
     },
     "extra": {
+      "supportsRTL": true,
+      "forceRTL": true,
       "eas": {
         "projectId": "431fc657-c772-4963-8d72-3d08f1b46996"
       }

@@ -1,4 +1,12 @@
-import { View, Text, Platform, ImageBackground, ScrollView, SafeAreaView } from 'react-native';
+import {
+  View,
+  Text,
+  Platform,
+  ImageBackground,
+  ScrollView,
+  SafeAreaView,
+  RefreshControl,
+} from 'react-native';
 import { Button } from '~/components/nativewindui/Button';
 import { Icon } from '@roninoss/icons';
 import { useColorScheme } from '~/lib/useColorScheme';
@@ -18,6 +26,15 @@ import {
   CardTitle,
 } from '~/components/nativewindui/Card';
 import { useEffect, useState } from 'react';
+import {
+  ESTIMATED_ITEM_HEIGHT,
+  List,
+  ListDataItem,
+  ListItem,
+  ListSectionHeader,
+} from '~/components/nativewindui/List';
+import { ListRenderItemInfo } from '@shopify/flash-list';
+import { Checkbox } from '~/components/nativewindui/Checkbox';
 
 const sections = [
   {
@@ -155,46 +172,125 @@ const Workspace = () => {
     };
     fetchTasks().then();
   }, []);
+  const onRefresh = () => {
+    const fetchTasks = async () => {
+      // join tasks and sections
+      const { data, error } = await supabase.from('tasks').select();
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      // get sections
+      const { data: sectionsData, error: sectionsError } = await supabase
+        .from('sections')
+        .select()
+        .in(
+          'section_id',
+          data.map((task) => task.section_id)
+        );
+      if (sectionsError) {
+        console.error(sectionsError);
+        return;
+      }
+      if (sectionsData) setSections(sectionsData);
+    };
+    fetchTasks().then();
+  };
+
   return (
     <>
       <StatusBar
         style={Platform.OS === 'ios' ? 'light' : colorScheme === 'dark' ? 'light' : 'dark'}
       />
       <Header />
-      <ScrollView className="p-4">
-        {sections33.map((section, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() =>
-              router.navigate({
-                pathname: '/section',
-                params: { section_id: section.section_id, section_name: section.name },
-              })
-            }>
-            <View className="mb-4">
-              <Card>
-                <CardImage
-                  source={{
-                    uri: sections[Math.floor(Math.random() * sections.length)]['bg-image'],
-                  }}
-                />
-                <CardContent>
-                  <CardTitle>
-                    <Text className={'text-right text-white'}>{section.name}</Text>
-                  </CardTitle>
-                </CardContent>
-                <CardFooter>
-                  <CardDescription className={'text-right text-white'}>
-                    {section.name} - {section.description}
-                  </CardDescription>
-                </CardFooter>
-              </Card>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <List
+        data={sections33.map((section) => ({
+          id: `${Math.random()}`,
+          title: section.name,
+          subTitle: section.description,
+          section_id: section.section_id,
+        }))}
+        estimatedItemSize={ESTIMATED_ITEM_HEIGHT.withSubTitle}
+        renderItem={renderItem}
+        // renderItem={(info) => {
+        //   return (
+        //     <TouchableOpacity
+        //       key={info.index}
+        //       onPress={() =>
+        //         router.navigate({
+        //           pathname: '/section',
+        //           params: { section_id: info.section.section_id, section_name: info.section.name },
+        //         })
+        //       }>
+        //       <View className="mb-4">
+        //         <Card>
+        //           <CardImage
+        //             source={{
+        //               uri: sections[Math.floor(Math.random() * sections.length)]['bg-image'],
+        //             }}
+        //           />
+        //           <CardContent>
+        //             <CardTitle>
+        //               <Text className={'text-right text-white'}>{info.section.name}</Text>
+        //             </CardTitle>
+        //           </CardContent>
+        //           <CardFooter>
+        //             <CardDescription className={'text-right text-white'}>
+        //               {info.section.name} - {info.section.description}
+        //             </CardDescription>
+        //           </CardFooter>
+        //         </Card>
+        //       </View>
+        //     </TouchableOpacity>
+        //   );
+        // }}
+        keyExtractor={keyExtractor}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={onRefresh} tintColor={colors.primary} />
+        }
+      />
+      {/*<ScrollView className="relative p-4">*/}
+      {/*  {sections33.map((section, index) => (*/}
+      {/*  ))}*/}
+      {/*</ScrollView>*/}
+      <Button
+        variant={'primary'}
+        onPress={() => router.navigate('/add-section-modal')}
+        className={'absolute bottom-4 right-4 size-10 bg-amber-400 hover:bg-amber-500'}>
+        <Icon name={'plus'} size={24} />
+      </Button>
     </>
   );
 };
+
+function keyExtractor(item: (Omit<ListDataItem, string> & { id: string }) | string) {
+  return typeof item === 'string' ? item : item.id;
+}
+
+function renderItem<T extends ListDataItem>(info: ListRenderItemInfo<T>) {
+  if (typeof info.item === 'string') {
+    return <ListSectionHeader {...info} />;
+  }
+  return (
+    <ListItem
+      rightView={
+        <View className="flex-1 justify-center px-4">
+          <Icon name={'calendar-alert'} size={24} />
+        </View>
+      }
+      titleClassName="text-right"
+      subTitleClassName="text-right"
+      {...info}
+      onPress={() => {
+        console.log(info.item);
+        router.navigate({
+          pathname: '/section',
+          params: { section_id: info.item.section_id, section_name: info.item.title },
+        });
+      }}
+    />
+  );
+}
 
 export default Workspace;

@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import { Text } from '~/components/nativewindui/Text';
 import { useEffect, useState } from 'react';
@@ -6,6 +6,7 @@ import { supabase } from '~/lib/supabase';
 import { Checkbox } from '~/components/nativewindui/Checkbox';
 import { Stack } from 'expo-router';
 import { ESTIMATED_ITEM_HEIGHT, List, ListItem } from '~/components/nativewindui/List';
+import { Icon } from '@roninoss/icons';
 
 const Section = () => {
   const { section_id, section_name } = useLocalSearchParams();
@@ -46,7 +47,18 @@ const Section = () => {
           }))}
           estimatedItemSize={ESTIMATED_ITEM_HEIGHT.withSubTitle}
           renderItem={(info) => {
-            return <ListItem {...info} />;
+            return (
+              <ListItem
+                titleClassName="text-right"
+                subTitleClassName="text-right"
+                leftView={
+                  <View className="flex-1 justify-center px-4">
+                    <Checkbox />
+                  </View>
+                }
+                {...info}
+              />
+            );
           }}
           keyExtractor={(item) => item.title}
         />

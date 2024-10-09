@@ -15,6 +15,7 @@ import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { NAV_THEME } from '~/theme';
 import colors from 'tailwindcss/colors';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -33,22 +34,32 @@ export default function RootLayout() {
       />
       {/* WRAP YOUR APP WITH ANY ADDITIONAL PROVIDERS HERE */}
       {/* <ExampleProvider> */}
-
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <BottomSheetModalProvider>
-          <ActionSheetProvider>
-            <NavThemeProvider value={NAV_THEME[colorScheme]}>
-              <Stack screenOptions={SCREEN_OPTIONS}>
-                <Stack.Screen name="index" options={INDEX_OPTIONS} />
-                <Stack.Screen name="login" options={LOGIN_OPTIONS} />
-                <Stack.Screen name="survey" options={SURVEY_OPTIONS} />
-                <Stack.Screen name="tabs" options={{ headerShown: false }} />
-                <Stack.Screen name="section" options={{}} />
-              </Stack>
-            </NavThemeProvider>
-          </ActionSheetProvider>
-        </BottomSheetModalProvider>
-      </GestureHandlerRootView>
+      <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <BottomSheetModalProvider>
+            <ActionSheetProvider>
+              <NavThemeProvider value={NAV_THEME[colorScheme]}>
+                <Stack screenOptions={SCREEN_OPTIONS}>
+                  <Stack.Screen
+                    name={'add-section-modal'}
+                    options={{
+                      presentation: 'modal',
+                    }}
+                  />
+                  <Stack.Screen name="index" options={INDEX_OPTIONS} />
+                  <Stack.Screen name="login" options={LOGIN_OPTIONS} />
+                  <Stack.Screen name="survey" options={SURVEY_OPTIONS} />
+                  <Stack.Screen
+                    name="tabs"
+                    options={{ headerShown: false, headerBackTitle: 'رجوع' }}
+                  />
+                  <Stack.Screen name="section" options={{}} />
+                </Stack>
+              </NavThemeProvider>
+            </ActionSheetProvider>
+          </BottomSheetModalProvider>
+        </GestureHandlerRootView>
+      </KeyboardProvider>
 
       {/* </ExampleProvider> */}
     </>
