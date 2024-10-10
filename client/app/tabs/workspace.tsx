@@ -35,6 +35,7 @@ import {
 } from '~/components/nativewindui/List';
 import { ListRenderItemInfo } from '@shopify/flash-list';
 import { Checkbox } from '~/components/nativewindui/Checkbox';
+import { NAV_THEME } from '~/theme';
 
 const sections = [
   {
@@ -110,37 +111,8 @@ const Header = () => {
   );
 };
 
-const featuredSections = [
-  {
-    label: 'قاعة زفاف الملكة',
-    type: 'wedding-venue',
-    description: 'احصل على أفضل العروض والخصومات من المتاجر المحلية في مدينتك.',
-    'bg-image':
-      'https://www.arabiaweddings.com/sites/default/files/styles/max980/public/articles/2018/09/largest_wedding_venues_in_riyadh.jpg?itok=dCQEt9HH',
-  },
-  {
-    label: 'قاعة زفاف الملكة',
-    type: 'wedding-venue',
-    description: 'احصل على أفضل العروض والخصومات من المتاجر المحلية في مدينتك.',
-    'bg-image':
-      'https://www.arabiaweddings.com/sites/default/files/styles/max980/public/articles/2018/09/largest_wedding_venues_in_riyadh.jpg?itok=dCQEt9HH',
-  },
-  {
-    label: 'قاعة زفاف الملكة',
-    type: 'wedding-venue',
-    description: 'احصل على أفضل العروض والخصومات من المتاجر المحلية في مدينتك.',
-    'bg-image':
-      'https://www.arabiaweddings.com/sites/default/files/styles/max980/public/articles/2018/09/largest_wedding_venues_in_riyadh.jpg?itok=dCQEt9HH',
-  },
-];
 const Workspace = () => {
   const { colors, colorScheme } = useColorScheme();
-  const handleLogout = () => {
-    supabase.auth.signOut().then(() => {
-      console.log('user logged out');
-      router.navigate('/');
-    });
-  };
   const [sections33, setSections] = useState<
     { description: string | null; name: string; section_id: number }[]
   >([]);
@@ -163,7 +135,8 @@ const Workspace = () => {
         .in(
           'section_id',
           data.map((task) => task.section_id)
-        );
+        )
+        .order('section_id', { ascending: true });
       if (sectionsError) {
         console.error(sectionsError);
         return;
@@ -207,53 +180,20 @@ const Workspace = () => {
       <List
         data={sections33.map((section) => ({
           id: `${Math.random()}`,
-          title: section.name,
+          title: section.ar_name,
+          icon: section.icon,
           subTitle: section.description,
           section_id: section.section_id,
+          colorScheme,
         }))}
         estimatedItemSize={ESTIMATED_ITEM_HEIGHT.withSubTitle}
         renderItem={renderItem}
-        // renderItem={(info) => {
-        //   return (
-        //     <TouchableOpacity
-        //       key={info.index}
-        //       onPress={() =>
-        //         router.navigate({
-        //           pathname: '/section',
-        //           params: { section_id: info.section.section_id, section_name: info.section.name },
-        //         })
-        //       }>
-        //       <View className="mb-4">
-        //         <Card>
-        //           <CardImage
-        //             source={{
-        //               uri: sections[Math.floor(Math.random() * sections.length)]['bg-image'],
-        //             }}
-        //           />
-        //           <CardContent>
-        //             <CardTitle>
-        //               <Text className={'text-right text-white'}>{info.section.name}</Text>
-        //             </CardTitle>
-        //           </CardContent>
-        //           <CardFooter>
-        //             <CardDescription className={'text-right text-white'}>
-        //               {info.section.name} - {info.section.description}
-        //             </CardDescription>
-        //           </CardFooter>
-        //         </Card>
-        //       </View>
-        //     </TouchableOpacity>
-        //   );
-        // }}
         keyExtractor={keyExtractor}
         refreshControl={
-          <RefreshControl refreshing={false} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl refreshing={false} onRefresh={onRefresh} tintColor={colors.grey} />
         }
       />
-      {/*<ScrollView className="relative p-4">*/}
-      {/*  {sections33.map((section, index) => (*/}
-      {/*  ))}*/}
-      {/*</ScrollView>*/}
+
       <Button
         variant={'primary'}
         onPress={() => router.navigate('/add-section-modal')}
@@ -274,9 +214,10 @@ function renderItem<T extends ListDataItem>(info: ListRenderItemInfo<T>) {
   }
   return (
     <ListItem
+      // style={{ backgroundColor: NAV_THEME[info.item.colorScheme].colors.background }}
       rightView={
         <View className="flex-1 justify-center px-4">
-          <Icon name={'calendar-alert'} size={24} />
+          <Icon name={info.item.icon || 'folder'} size={24} />
         </View>
       }
       titleClassName="text-right"

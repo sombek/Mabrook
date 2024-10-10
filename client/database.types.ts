@@ -5,17 +5,23 @@ export type Database = {
     Tables: {
       sections: {
         Row: {
+          ar_name: string | null;
           description: string | null;
+          icon: string | null;
           name: string;
           section_id: number;
         };
         Insert: {
+          ar_name?: string | null;
           description?: string | null;
+          icon?: string | null;
           name: string;
           section_id?: number;
         };
         Update: {
+          ar_name?: string | null;
           description?: string | null;
+          icon?: string | null;
           name?: string;
           section_id?: number;
         };
