@@ -1,12 +1,10 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { Pressable, View } from 'react-native';
-import { Text } from '~/components/nativewindui/Text';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { supabase } from '~/lib/supabase';
-import { Checkbox } from '~/components/nativewindui/Checkbox';
-import { Stack } from 'expo-router';
 import { ESTIMATED_ITEM_HEIGHT, List, ListItem } from '~/components/nativewindui/List';
 import { Icon } from '@roninoss/icons';
+import { BackButton } from '~/components/BackButton';
 
 const Section = () => {
   const { section_id, section_name } = useLocalSearchParams();
@@ -35,35 +33,36 @@ const Section = () => {
     };
     fetchTasks().then();
   }, []);
+
   return (
     <View className="flex-col gap-4">
       <Stack.Screen
         options={{
           title: section_name,
-          headerLeft: () => (
-            // align to the right
-            <Pressable onPress={() => router.back()} className="p-2">
-              <Icon name="chevron-right" size={24} color={'fff'} />
-            </Pressable>
-          ),
+          headerLeft: () => <BackButton onPress={() => router.back()} />,
         }}
       />
 
       <View className="h-full flex-col gap-4">
         <List
           data={tasks?.map((task) => ({
+            task_id: task.task_id,
             title: task.name,
             subTitle: task.details,
           }))}
           estimatedItemSize={ESTIMATED_ITEM_HEIGHT.withSubTitle}
           renderItem={(info) => {
+            console.log(info);
             return (
               <ListItem
                 titleClassName="text-left"
                 subTitleClassName="text-left"
+                onPress={() => {
+                  router.push(`/task?task_id=${info.item.task_id}`);
+                }}
                 rightView={
                   <View className="flex-1 justify-center px-4">
-                    <Checkbox />
+                    <Icon name="chevron-left" size={24} />
                   </View>
                 }
                 {...info}

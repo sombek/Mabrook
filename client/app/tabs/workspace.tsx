@@ -42,7 +42,7 @@ const Header = () => {
           </Button>
         </View>
         <View className="flex-1">
-          <Text className="text-center text-2xl font-bold text-white">زواج حليمة و سعيد 🎉</Text>
+          <Text className="text-center text-2xl font-bold text-white">زواج سعيد وسعيدة 🎉</Text>
           <View className="flex-row items-center justify-center gap-2">
             <Text className="text-center text-2xl font-bold text-white">
               {new Date()

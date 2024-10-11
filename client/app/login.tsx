@@ -7,7 +7,7 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { Button } from '~/components/nativewindui/Button';
 import { useEffect, useState } from 'react';
 import { supabase } from '~/lib/supabase';
-import { Link, router } from 'expo-router';
+import { Link, router, Stack } from 'expo-router';
 import { cn } from '~/lib/cn';
 import {
   KeyboardAwareScrollView,
@@ -17,6 +17,8 @@ import {
 import { Form, FormItem, FormSection } from '~/components/nativewindui/Form';
 import { TextField } from '~/components/nativewindui/TextField';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { OtpInput } from 'react-native-otp-entry';
+import colors from 'tailwindcss/colors';
 
 export const LoginPage = ({
   setIsLoggingIn,
@@ -27,7 +29,7 @@ export const LoginPage = ({
   setPhone: (value: string) => void;
   phone: string;
 }) => {
-  const { colors, colorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithOtp({
       phone: '+966' + phone,
@@ -39,7 +41,7 @@ export const LoginPage = ({
   const insets = useSafeAreaInsets();
 
   return (
-    <View className="ios:bg-card flex-1" style={{ paddingBottom: insets.bottom }}>
+    <View className="flex-1" style={{ paddingBottom: insets.bottom }}>
       <KeyboardAwareScrollView
         bottomOffset={Platform.select({ ios: 175 })}
         bounces={false}
@@ -56,11 +58,11 @@ export const LoginPage = ({
           </View>
         </View>
 
-        <Form className="gap-2">
-          <FormSection className="ios:bg-background">
+        <Form className="gap-2 px-12">
+          <FormSection className="">
             <FormItem>
               <TextField
-                className={'text-left'}
+                className={'rounded-xl bg-white p-4 text-left text-gray-700'}
                 placeholder={'رقم الجوال'}
                 onSubmitEditing={() => KeyboardController.setFocusTo('next')}
                 blurOnSubmit={false}
@@ -98,7 +100,7 @@ export const VerifyOtp = ({
   setIsLoggingIn: (value: boolean) => void;
   phone: string;
 }) => {
-  const { colors, colorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const [otp, setOtp] = useState('');
 
   function handleOtp() {
@@ -135,30 +137,44 @@ export const VerifyOtp = ({
       <StatusBar
         style={Platform.OS === 'ios' ? 'light' : colorScheme === 'dark' ? 'light' : 'dark'}
       />
+      <Stack.Screen
+        options={{
+          headerLeft: () => (
+            <Text onPress={() => setIsLoggingIn(true)} className={' underline '}>
+              رجوع
+            </Text>
+          ),
+        }}
+      />
 
       <View className="flex-1 items-center justify-center gap-1 px-12">
-        <View className="">
-          <Button onPress={() => setIsLoggingIn(true)} variant={'secondary'}>
-            <Text>رجوع</Text>
-          </Button>
-        </View>
-
-        <Icon name="file-lock-outline" size={42} color={colors.grey} />
-        <Text variant="title3" className="pb-1 text-center font-semibold">
+        <Text variant="title3" className="p-14 text-center font-semibold">
           التحقق من الرمز
         </Text>
 
-        <TextInput
-          value={otp}
-          onChangeText={setOtp}
-          placeholder="رمز التحقق"
-          keyboardType="phone-pad"
-          secureTextEntry
-          maxLength={6}
-          className="my-2 mb-4 w-full rounded-xl border border-gray-300 bg-white p-4 text-right text-gray-700"
-        />
+        <View className="flex flex-col-reverse">
+          <OtpInput
+            numberOfDigits={6}
+            focusColor={colors.amber[400]}
+            autoFocus={true}
+            focusStickBlinkingDuration={500}
+            onTextChange={(text) => setOtp(text)}
+            type="numeric"
+            onFilled={(text) => {
+              setOtp(text);
+            }}
+            theme={{
+              containerStyle: {
+                margin: 10,
+              },
+            }}
+            textInputProps={{
+              accessibilityLabel: 'One-Time Password',
+            }}
+          />
+        </View>
 
-        <Button className="w-full" onPress={handleOtp}>
+        <Button className="w-full bg-amber-400" onPress={handleOtp}>
           <Text>تسجيل الدخول</Text>
         </Button>
       </View>
