@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Text } from '~/components/nativewindui/Text';
 import { useEffect, useState } from 'react';
 import { supabase } from '~/lib/supabase';
@@ -37,7 +37,17 @@ const Section = () => {
   }, []);
   return (
     <View className="flex-col gap-4">
-      <Stack.Screen options={{ title: section_name }} />
+      <Stack.Screen
+        options={{
+          title: section_name,
+          headerLeft: () => (
+            // align to the right
+            <Pressable onPress={() => router.back()} className="p-2">
+              <Icon name="chevron-right" size={24} color={'fff'} />
+            </Pressable>
+          ),
+        }}
+      />
 
       <View className="h-full flex-col gap-4">
         <List
@@ -49,9 +59,9 @@ const Section = () => {
           renderItem={(info) => {
             return (
               <ListItem
-                titleClassName="text-right"
-                subTitleClassName="text-right"
-                leftView={
+                titleClassName="text-left"
+                subTitleClassName="text-left"
+                rightView={
                   <View className="flex-1 justify-center px-4">
                     <Checkbox />
                   </View>

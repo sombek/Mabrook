@@ -33,7 +33,7 @@ const AddSectionModal = () => {
       <Stack.Screen
         options={{
           title: 'إضافة قسم',
-          headerRight: () => (
+          headerLeft: () => (
             <Text onPress={handleCancel} className={' underline '}>
               إلغاء
             </Text>

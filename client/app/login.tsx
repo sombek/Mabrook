@@ -7,8 +7,16 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { Button } from '~/components/nativewindui/Button';
 import { useEffect, useState } from 'react';
 import { supabase } from '~/lib/supabase';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { cn } from '~/lib/cn';
+import {
+  KeyboardAwareScrollView,
+  KeyboardController,
+  KeyboardStickyView,
+} from 'react-native-keyboard-controller';
+import { Form, FormItem, FormSection } from '~/components/nativewindui/Form';
+import { TextField } from '~/components/nativewindui/TextField';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const LoginPage = ({
   setIsLoggingIn,
@@ -28,37 +36,58 @@ export const LoginPage = ({
       alert(error.message);
     } else setIsLoggingIn(false);
   };
+  const insets = useSafeAreaInsets();
+
   return (
-    <>
-      <StatusBar
-        style={Platform.OS === 'ios' ? 'light' : colorScheme === 'dark' ? 'light' : 'dark'}
-      />
+    <View className="ios:bg-card flex-1" style={{ paddingBottom: insets.bottom }}>
+      <KeyboardAwareScrollView
+        bottomOffset={Platform.select({ ios: 175 })}
+        bounces={false}
+        keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="handled"
+        contentContainerClassName="ios:pt-12 pt-20">
+        <StatusBar
+          style={Platform.OS === 'ios' ? 'light' : colorScheme === 'dark' ? 'light' : 'dark'}
+        />
 
-      <View className="flex-1 items-center justify-center gap-1 px-12">
-        <View className="pt-14">
-          <Icon name="file-lock-outline" size={56} color={colors.grey} />
-        </View>
-
-        <View className="w-full flex-row items-center justify-center px-10">
-          <View className="flex h-14 items-center justify-center rounded-xl rounded-r-none border border-r-0 border-gray-300 bg-gray-100 px-4 text-gray-700">
-            <Text className="text-gray-700">+966</Text>
+        <View className="flex-1 items-center justify-center gap-1 px-12">
+          <View className="flex-row items-center justify-center gap-2 p-14">
+            <Text variant="largeTitle">نورتنا </Text>
           </View>
-
-          <TextInput
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="رقم الجوال"
-            keyboardType="phone-pad"
-            maxLength={9}
-            className="h-14 w-full rounded-xl rounded-l-none border  border-l-0 border-gray-300  bg-white px-2 text-gray-700"
-          />
         </View>
 
-        <Button onPress={handleLogin} className="mt-4 w-full">
-          <Text>تسجيل الدخول</Text>
-        </Button>
-      </View>
-    </>
+        <Form className="gap-2">
+          <FormSection className="ios:bg-background">
+            <FormItem>
+              <TextField
+                className={'text-left'}
+                placeholder={'رقم الجوال'}
+                onSubmitEditing={() => KeyboardController.setFocusTo('next')}
+                blurOnSubmit={false}
+                autoFocus
+                rightView={<Text className="px-2 py-3 text-lg text-gray-700">+966</Text>}
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="number-pad"
+                textContentType="emailAddress"
+                returnKeyType="next"
+              />
+            </FormItem>
+          </FormSection>
+        </Form>
+      </KeyboardAwareScrollView>
+      <KeyboardStickyView
+        offset={{
+          closed: 0,
+          opened: Platform.select({ ios: insets.bottom + 30, default: insets.bottom }),
+        }}>
+        <View className=" px-12 py-4">
+          <Button size="lg" onPress={handleLogin} className={'bg-amber-400'}>
+            <Text>إرسال رمز التحقق</Text>
+          </Button>
+        </View>
+      </KeyboardStickyView>
+    </View>
   );
 };
 

@@ -38,13 +38,13 @@ export default function RootLayout() {
                   tabBarIcon: ({ color }) => <Icon name="bookmark" size={24} color={color} />,
                 }}
               />
-              <Tabs.Screen
-                name={'settings'}
-                options={{
-                  title: 'الإعدادات',
-                  tabBarIcon: ({ color }) => <Icon name="screwdriver" size={24} color={color} />,
-                }}
-              />
+              {/*<Tabs.Screen*/}
+              {/*  name={'settings'}*/}
+              {/*  options={{*/}
+              {/*    title: 'الإعدادات',*/}
+              {/*    tabBarIcon: ({ color }) => <Icon name="screwdriver" size={24} color={color} />,*/}
+              {/*  }}*/}
+              {/*/>*/}
             </Tabs>
           </NavThemeProvider>
         </ActionSheetProvider>

@@ -1,30 +1,12 @@
-import {
-  View,
-  Text,
-  Platform,
-  ImageBackground,
-  ScrollView,
-  SafeAreaView,
-  RefreshControl,
-} from 'react-native';
+import { I18nManager, Platform, RefreshControl, Text, View } from 'react-native';
 import { Button } from '~/components/nativewindui/Button';
 import { Icon } from '@roninoss/icons';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { supabase } from '~/lib/supabase';
 import { router } from 'expo-router';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { cn } from '~/lib/cn';
 import { StatusBar } from 'expo-status-bar';
 import DeviceInfo from 'react-native-device-info';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardImage,
-  CardSubtitle,
-  CardTitle,
-} from '~/components/nativewindui/Card';
 import { useEffect, useState } from 'react';
 import {
   ESTIMATED_ITEM_HEIGHT,
@@ -34,60 +16,15 @@ import {
   ListSectionHeader,
 } from '~/components/nativewindui/List';
 import { ListRenderItemInfo } from '@shopify/flash-list';
-import { Checkbox } from '~/components/nativewindui/Checkbox';
-import { NAV_THEME } from '~/theme';
-
-const sections = [
-  {
-    label: 'قاعات الزفاف',
-    description: 'احصل على أفضل العروض والخصومات من المتاجر المحلية في مدينتك.',
-    'bg-image':
-      'https://i.saudi-arabia.zafaf.net/gallery/1694/preview_ffcwbocblmnobottnbqejmlzw.jpg',
-    'overlay-color': 'rgba(255, 99, 71, 0.5)', // Tomato
-  },
-  {
-    label: 'التصوير الفوتوغرافي والفيديو',
-    description: 'تصفح العروض المتاحة لدينا واختر ما يناسبك.',
-    'bg-image': 'https://www.neshanstyle.com/blog/wp-content/uploads/2019/05/2-1.jpg',
-    'overlay-color': 'rgba(60, 179, 113, 0.5)', // Medium Sea Green
-  },
-  {
-    label: 'دعوة زواج',
-    description: 'احصل على أفضل العروض والخصومات من المتاجر المحلية في مدينتك.',
-    'bg-image': 'https://images.unsplash.com/photo-1514996937319-344454492b37',
-    'overlay-color': 'rgba(255, 165, 0, 0.5)', // Orangespan: 1,
-  },
-  {
-    label: 'كوش وتنسيق حفلات',
-    description: 'تصفح العروض المتاحة لدينا واختر ما يناسبك.',
-    'bg-image': 'https://cdn.salla.sa/YYQmbDywibx9yrHUGrToN8axdiZydY2u1FjXgOqC.jpeg',
-    'overlay-color': 'rgba(138, 43, 226, 0.5)', // Blue Violet
-  },
-  {
-    label: 'فستان الزفاف',
-    description: 'احصل على أفضل العروض والخصومات من المتاجر المحلية في مدينتك.',
-    'bg-image': 'https://i.saudi-arabia.zafaf.net/articles/body/295/YHrUH68yhBj5SZS.jpg',
-    'overlay-color': 'rgba(255, 20, 147, 0.5)', // Deep Pink
-  },
-  {
-    label: 'الشعر والمكياج',
-    description: 'تصفح العروض المتاحة لدينا واختر ما يناسبك.',
-    'bg-image':
-      'https://images.unsplash.com/photo-1593721627612-4c8376834dcc?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'overlay-color': 'rgba(65, 105, 225, 0.5)', // Royal Blue
-  },
-  {
-    label: 'كيك الزفاف',
-    description: 'احصل على أفضل العروض والخصومات من المتاجر المحلية في مدينتك.',
-    'bg-image':
-      'https://images.unsplash.com/photo-1486506063901-2b3966ca11d2?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    // dark goldenrod
-    'overlay-color': 'rgba(184, 134, 11, 0.5)',
-  },
-];
+import { getLocales } from 'expo-localization';
+import * as Updates from 'expo-updates';
 
 const Header = () => {
   const hasDynamicIsland = DeviceInfo.hasDynamicIsland();
+
+  function goToSettings() {
+    router.navigate('/settings');
+  }
 
   return (
     <View
@@ -95,18 +32,32 @@ const Header = () => {
         'w-full items-center justify-end rounded-b-3xl bg-amber-400 p-4',
         hasDynamicIsland ? 'pt-16' : 'pt-4'
       )}>
-      <Text className="text-center text-2xl font-bold text-white">زواج حليمة و سعيد 🎉</Text>
-      <Text className="text-center text-2xl font-bold text-white">
-        <Icon name={'calendar-alert'} size={24} color={'white'} />{' '}
-        {new Date()
-          .toLocaleDateString('ar-EG', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-          .replace('،', '')}
-      </Text>
+      <View className="w-full flex-row justify-between">
+        <View className="w-2 flex-row items-center justify-center">
+          <Button
+            variant={'plain'}
+            className="bg-amber-400 hover:bg-amber-500"
+            onPress={goToSettings}>
+            <Icon name={'cog'} size={24} color={'white'} />
+          </Button>
+        </View>
+        <View className="flex-1">
+          <Text className="text-center text-2xl font-bold text-white">زواج حليمة و سعيد 🎉</Text>
+          <View className="flex-row items-center justify-center gap-2">
+            <Text className="text-center text-2xl font-bold text-white">
+              {new Date()
+                .toLocaleDateString('ar-EG', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
+                .replace('،', '')}
+            </Text>
+            <Icon name={'calendar-alert'} size={24} color={'white'} />
+          </View>
+        </View>
+      </View>
     </View>
   );
 };
@@ -170,13 +121,16 @@ const Workspace = () => {
     };
     fetchTasks().then();
   };
-
+  const deviceLanguage = getLocales()[0].languageCode;
+  console.log(I18nManager.isRTL);
   return (
     <>
       <StatusBar
         style={Platform.OS === 'ios' ? 'light' : colorScheme === 'dark' ? 'light' : 'dark'}
       />
-      <Header />
+      <View className={'bg-white'}>
+        <Header />
+      </View>
       <List
         data={sections33.map((section) => ({
           id: `${Math.random()}`,
@@ -215,13 +169,13 @@ function renderItem<T extends ListDataItem>(info: ListRenderItemInfo<T>) {
   return (
     <ListItem
       // style={{ backgroundColor: NAV_THEME[info.item.colorScheme].colors.background }}
-      rightView={
+      leftView={
         <View className="flex-1 justify-center px-4">
           <Icon name={info.item.icon || 'folder'} size={24} />
         </View>
       }
-      titleClassName="text-right"
-      subTitleClassName="text-right"
+      titleClassName="text-left"
+      subTitleClassName="text-left"
       {...info}
       onPress={() => {
         console.log(info.item);

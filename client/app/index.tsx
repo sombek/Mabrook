@@ -1,24 +1,16 @@
 import { Link, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import {
-  Animated,
-  Button as RNButton,
-  ButtonProps,
-  Dimensions,
-  Image,
-  Platform,
-  ScrollView,
-  View,
-} from 'react-native';
+import { useEffect } from 'react';
+import { Dimensions, Image, Platform, ScrollView, View } from 'react-native';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { Button } from '~/components/nativewindui/Button';
 import { Text } from '~/components/nativewindui/Text';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { useEffect } from 'react';
 import { supabase } from '~/lib/supabase';
 import { cn } from '~/lib/cn';
+import colors from 'tailwindcss/colors';
 
 export default function Screen() {
   const _renderItem = ({
@@ -71,7 +63,7 @@ export default function Screen() {
   const sliderWidth = getScreenWidth() - 20;
   const itemWidth = getScreenWidth() - 60;
   const [activeIndex, setActiveIndex] = React.useState(2);
-  const { colors, colorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -110,7 +102,7 @@ export default function Screen() {
   }, []);
 
   return (
-    <View className={cn(colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white')}>
+    <View className={cn(colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white', 'h-full')}>
       <StatusBar
         style={Platform.OS === 'ios' ? 'light' : colorScheme === 'dark' ? 'light' : 'dark'}
       />
@@ -123,8 +115,7 @@ export default function Screen() {
         source={require('~/assets/landing-page.png')}
         className="z-0 h-96 w-full object-cover"
       />
-
-      <ScrollView className="relative h-full p-4">
+      <View className={'h-80'}>
         <Carousel
           ref={isCarousel}
           data={entries}
@@ -147,18 +138,19 @@ export default function Screen() {
             borderRadius: 5,
             marginHorizontal: 8,
             // use amber color for active dot
-            backgroundColor: colors.primary,
+            backgroundColor: colors.amber['400'],
           }}
         />
-        {/*  button bottom position */}
-        <View className={cn('flex flex-col items-center justify-center')}>
-          <Link href="/login" asChild>
-            <Button size={Platform.select({ ios: 'lg', default: 'md' })} className="w-full">
-              <Text>إبدأ الآن</Text>
-            </Button>
-          </Link>
-        </View>
-      </ScrollView>
+      </View>
+
+      {/*  button bottom position */}
+      <View className={'m-4 rounded-lg p-4'}>
+        <Link href="/login" asChild>
+          <Button className={'bg-amber-400 hover:bg-amber-500'}>
+            <Text>إبدأ الآن</Text>
+          </Button>
+        </Link>
+      </View>
     </View>
   );
 }

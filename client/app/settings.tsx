@@ -1,9 +1,9 @@
-import { View, Text, Platform } from 'react-native';
+import { View, Text, Platform, Pressable } from 'react-native';
 import { Button } from '~/components/nativewindui/Button';
 import { Icon } from '@roninoss/icons';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { supabase } from '~/lib/supabase';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Session } from '@supabase/auth-js';
 import { ThemeToggle } from '~/components/ThemeToggle';
@@ -25,6 +25,16 @@ const Settings = () => {
   };
   return (
     <View className="flex-1 items-center justify-center p-4">
+      <Stack.Screen
+        options={{
+          headerLeft: () => (
+            // align to the right
+            <Pressable onPress={() => router.back()} className="p-2">
+              <Icon name="chevron-right" size={24} color={'fff'} />
+            </Pressable>
+          ),
+        }}
+      />
       <Text>This is the settings screen. You should see this after you login.</Text>
       {session && <Text className="mt-4">Signed in as {session.user.phone}</Text>}
 

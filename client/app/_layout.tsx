@@ -49,11 +49,26 @@ export default function RootLayout() {
                   <Stack.Screen name="index" options={INDEX_OPTIONS} />
                   <Stack.Screen name="login" options={LOGIN_OPTIONS} />
                   <Stack.Screen name="survey" options={SURVEY_OPTIONS} />
+                  <Stack.Screen name="tabs" options={{ headerShown: false, title: 'الرئيسية' }} />
                   <Stack.Screen
-                    name="tabs"
-                    options={{ headerShown: false, headerBackTitle: 'رجوع' }}
+                    name="section"
+                    options={{
+                      headerStyle: {
+                        backgroundColor: colors.amber['400'],
+                      },
+                      headerTintColor: colors.white,
+                    }}
                   />
-                  <Stack.Screen name="section" options={{}} />
+                  <Stack.Screen
+                    name="settings"
+                    options={{
+                      title: 'الإعدادات',
+                      headerStyle: {
+                        backgroundColor: colors.amber['400'],
+                      },
+                      headerTintColor: colors.white,
+                    }}
+                  />
                 </Stack>
               </NavThemeProvider>
             </ActionSheetProvider>
@@ -75,7 +90,7 @@ let SURVEY_OPTIONS: NativeStackNavigationOptions = {
 const INDEX_OPTIONS = {
   headerShown: false,
   // headerLargeTitle: true,
-  // title: 'NativeWindUI',
+  title: 'الرئيسية',
   // headerRight: () => <SettingsIcon />,
 } as const;
 
